@@ -1,0 +1,78 @@
+#include < Servo.h >
+ 
+Servo servoLeft; // Define left servo
+Servo servoRight; // Define right servo
+int vG = 96;
+int vL = 85;
+int left = A3;
+int right = A0;
+int midLeft = A2;
+int midRight = A1;
+int LIMITE = 950;
+int l, r, mL, mR;
+int pl, pr, pml, pmr;
+float vel = 0.1;
+boolean started = false;
+ 
+void setup() {
+    Serial.begin(9600);
+    servoLeft.attach(9); // Set left servo to digital pin 9
+    servoRight.attach(10); // Set right servo to digital pin 10
+    digitalWrite(4, HIGH);
+}
+ 
+void loop() {
+    if (!started) {
+        stopRobot();
+        delay(1000);
+        started = true;
+    }
+    pl = l;
+    pr = r;
+    pml = mL;
+    pmr = mR;
+    l = analogRead(left);
+    r = analogRead(right);
+    mL = analogRead(midLeft);
+    mR = analogRead(midRight);
+    Serial.print("l:");
+    Serial.println(l);
+    Serial.print("ml:");
+    Serial.println(mL);
+    Serial.print("mr:");
+    Serial.println(mR);
+    Serial.print("r:");
+    Serial.println(r);
+    if (mL > LIMITE && mR < LIMITE) {
+        turnRight();
+    } else if (mR > LIMITE && mL < LIMITE) {
+        turnLeft();
+    } else {
+        forward();
+    }
+}
+ 
+// Motion routines for forward, reverse, turns, and stop
+void forward() {
+    servoLeft.write(vG);
+    servoRight.write(vL);
+}
+ 
+void reverse() {
+    servoLeft.write(vL);
+    servoRight.write(vG);
+}
+ 
+void turnRight() {
+    servoLeft.write(vG);
+    servoRight.write(90);
+}
+void turnLeft() {
+    servoLeft.write(90);
+    servoRight.write(vL);
+}
+ 
+void stopRobot() {
+    servoLeft.write(90);
+    servoRight.write(90);
+}
